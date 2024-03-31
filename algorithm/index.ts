@@ -49,74 +49,33 @@ function findOdd(arr: number[]): void {
   console.log(`Odd numbers: ${oddArr}`);
 }
 
-//sorted array
-let test1 = [1, 2, 3, 4, 5];
-console.log(`Array 1: ${test1}`);
-console.log("Output:");
-miniMaxSum(test1);
-countTotal(test1);
-findMin(test1);
-findMax(test1);
-findEven(test1);
-findOdd(test1);
-console.log("-----------------------------");
+const tests = [
+  [1, 2, 3, 4, 5], //sorted array
+  [5, 3, 1, 2, 4], //unsorted array
+  [1, 1, 1, 1, 1], //array with duplicates
+  [1000000001, 1000000002, 1000000003, 1000000004, 1000000005], //array with large numbers
+  [0, 1, 2, 3, 4], //array includes zero
+  [-2, -1, 0, 1, 2], //array includes negative numbers
+];
 
-//unsorted array
-let test2 = [5, 3, 1, 2, 4];
-console.log(`Array 2: ${test2}`);
-console.log("Output:");
-miniMaxSum(test2);
-countTotal(test2);
-findMin(test2);
-findMax(test2);
-findEven(test2);
-findOdd(test2);
-console.log("-----------------------------");
+//very large array
+const randomLargeArray = Array(1000000).fill(0);
+randomLargeArray.forEach((e, index) => {
+  randomLargeArray[index] =
+    Math.round(Math.random() * 100000) *
+    (Math.round(Math.random()) == 0 ? 1 : -1);
+});
 
-//array with duplicates
-let test3 = [1, 1, 1, 1, 1];
-console.log(`Array 3: ${test3}`);
-console.log("Output:");
-miniMaxSum(test3);
-countTotal(test3);
-findMin(test3);
-findMax(test3);
-findEven(test3);
-findOdd(test3);
-console.log("-----------------------------");
+tests.push(randomLargeArray);
 
-//array with large numbers
-let test4 = [1000000001, 1000000002, 1000000003, 1000000004, 1000000005];
-console.log(`Array 4: ${test4}`);
-console.log("Output:");
-miniMaxSum(test4);
-countTotal(test4);
-findMin(test4);
-findMax(test4);
-findEven(test4);
-findOdd(test4);
-console.log("-----------------------------");
-
-//array includes zero
-let test5 = [0, 1, 2, 3, 4];
-console.log(`Array 5: ${test5}`);
-console.log("Output:");
-miniMaxSum(test5);
-countTotal(test5);
-findMin(test5);
-findMax(test5);
-findEven(test5);
-findOdd(test5);
-console.log("-----------------------------");
-
-//array includes negative numbers
-let test6 = [-2, -1, 0, 1, 2];
-console.log(`Array 6: ${test6}`);
-console.log("Output:");
-miniMaxSum(test6);
-countTotal(test6);
-findMin(test6);
-findMax(test6);
-findEven(test6);
-findOdd(test6);
-console.log("-----------------------------");
+for (let i = 0; i < tests.length; i++) {
+  console.log(`Array ${i + 1}: ${tests[i]}`);
+  console.log("Output:");
+  miniMaxSum(tests[i]);
+  countTotal(tests[i]);
+  findMin(tests[i]);
+  findMax(tests[i]);
+  findEven(tests[i]);
+  findOdd(tests[i]);
+  console.log("-----------------------------");
+}
