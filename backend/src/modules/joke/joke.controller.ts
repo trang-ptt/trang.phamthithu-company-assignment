@@ -8,7 +8,7 @@ export class JokeController {
 
   @Get()
   async getJoke(@Req() req: Request, @Res() res: Response) {
-    const joke = await this.jokeService.get(req, res);
+    const joke = await this.jokeService.get(req);
     res.json(joke);
   }
 }

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request } from 'express';
+import { NO_JOKE_MESSAGE, VOTED_JOKES } from 'src/app.constants';
 import { BaseServiceAbstract } from 'src/repositories/base';
 import { JokeRepository } from 'src/repositories/joke.repository';
 import { FindAllResponse } from 'src/types/common.type';
@@ -14,49 +15,32 @@ export class JokeService extends BaseServiceAbstract<Joke> {
     super(joke_repository);
   }
 
-  async get(
-    req: Request,
-    res: Response,
-  ): Promise<FindAllResponse<Joke> | string> {
+  async get(req: Request): Promise<FindAllResponse<Joke> | string> {
     const count = await this.joke_repository.count();
-    const seenJokes: number[] = this.getSeenJokes(req);
-    console.log(seenJokes)
+    const votedJokes: string[] = this.getVotedJokes(req);
 
-    // Ensure we don't enter an infinite loop if all jokes have been seen
-    if (seenJokes.length >= count) {
-      return `That's all the jokes for today! Come back another day!`;
+    if (votedJokes.length >= count) {
+      return NO_JOKE_MESSAGE;
     }
 
-    let choseJokeIndex;
     let joke;
     do {
-      choseJokeIndex = Math.floor(Math.random() * count);
+      const choseJokeIndex = Math.floor(Math.random() * count);
       joke = await this.joke_repository.findAll(
         {},
         { skip: choseJokeIndex, limit: 1 },
       );
-    } while (seenJokes.includes(choseJokeIndex) && joke);
-
-    // Update seen jokes
-    seenJokes.push(choseJokeIndex);
-    this.setSeenJokes(res, seenJokes);
+    } while (votedJokes.includes(joke.items[0].id) && joke);
 
     return joke;
   }
 
-  private getSeenJokes(req: Request): number[] {
+  private getVotedJokes(req: Request): string[] {
     try {
-      const cookie = req.cookies['seenJokes'];
+      const cookie = req.cookies[VOTED_JOKES];
       return cookie ? JSON.parse(cookie) : [];
     } catch (error) {
       return [];
     }
-  }
-
-  private setSeenJokes(res: Response, seenJokes: number[]): void {
-    res.cookie('seenJokes', JSON.stringify(seenJokes), {
-      maxAge: 60 * 1000,
-      httpOnly: true,
-    });
   }
 }
