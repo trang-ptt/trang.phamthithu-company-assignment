@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-
+  app.use(cookieParser());
+  
   const config = new DocumentBuilder()
     .setTitle('Joke API')
     .setVersion('1.0')
