@@ -7,7 +7,7 @@ import { join } from 'path';
 export class AppService {
   getWebpage(res: Response) {
     let indexHTML = readFileSync(
-      join(__dirname, '../../', 'frontend', 'index.html'),
+      join(__dirname, '../', '', 'index.html'),
       'utf-8',
     );
 
