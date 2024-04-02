@@ -94,7 +94,7 @@
 
       async function fetchJoke() {
         try {
-          const response = await fetch("http://localhost:3000/joke", {
+          const response = await fetch("https://trangptt-joke.onrender.com/joke", {
             credentials: "include",
           });
           if (!response.ok) {
@@ -132,7 +132,7 @@
 
       async function sendVote(jokeId, isFunny) {
         try {
-          const response = await fetch("http://localhost:3000/vote", {
+          const response = await fetch("https://trangptt-joke.onrender.com/vote", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
