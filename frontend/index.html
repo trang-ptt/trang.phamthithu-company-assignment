@@ -90,9 +90,13 @@
       </div>
     </div>
     <script>
+      let currentJokeId = null;
+
       async function fetchJoke() {
         try {
-          const response = await fetch("http://localhost:3000/joke");
+          const response = await fetch("http://localhost:3000/joke", {
+            credentials: "include",
+          });
           if (!response.ok) {
             throw new Error("Failed to fetch joke content");
           }
@@ -107,20 +111,22 @@
 
       async function appendJokeContent() {
         const jokeData = await fetchJoke();
+        const funnyButton = document.getElementById("funny-button");
+        const notFunnyButton = document.getElementById("not-funny-button");
         if (jokeData && !(typeof jokeData == "string")) {
           const jokeContent = jokeData.items[0].content;
           const jokeContentElement = document.getElementById("joke-content");
           jokeContentElement.innerHTML = jokeContent;
-          const jokeId = jokeData.items[0]._id;
-          document
-            .getElementById("funny-button")
-            .addEventListener("click", () => sendVote(jokeId, true));
-          document
-            .getElementById("not-funny-button")
-            .addEventListener("click", () => sendVote(jokeId, false));
+          currentJokeId = jokeData.items[0]._id;
+
+          funnyButton.style.display = "";
+          notFunnyButton.style.display = "";
         } else {
           const jokeContentElement = document.getElementById("joke-content");
           jokeContentElement.innerHTML = `That's all the jokes for today! Come back another day!`;
+
+          funnyButton.style.display = "none";
+          notFunnyButton.style.display = "none";
         }
       }
 
@@ -135,6 +141,7 @@
               jokeId: jokeId,
               isFunny: isFunny,
             }),
+            credentials: "include",
           });
           if (!response.ok) {
             throw new Error("Failed to send vote");
@@ -146,12 +153,14 @@
       }
 
       document.addEventListener("DOMContentLoaded", appendJokeContent);
-      document
-        .getElementById("funny-button")
-        .addEventListener("click", appendJokeContent);
+      document.getElementById("funny-button").addEventListener("click", () => {
+        sendVote(currentJokeId, true).finally(appendJokeContent);
+      });
       document
         .getElementById("not-funny-button")
-        .addEventListener("click", appendJokeContent);
+        .addEventListener("click", () => {
+          sendVote(currentJokeId, false).finally(appendJokeContent);
+        });
     </script>
   </body>
 </html>
