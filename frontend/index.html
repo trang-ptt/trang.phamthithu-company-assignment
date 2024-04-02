@@ -52,16 +52,7 @@
       </div>
     </div>
     <div class="container h-50">
-      <div style="margin: 50 80 50 80">
-        This is joke content. This is joke content. This is joke content. This
-        is joke content. This is joke content. This is joke content. This is
-        joke content. This is joke content. This is joke content. This is joke
-        content. This is joke content. This is joke content. This is joke
-        content. This is joke content. This is joke content. This is joke
-        content. This is joke content. This is joke content. This is joke
-        content. This is joke content. This is joke content. This is joke
-        content.
-      </div>
+      <div id="joke-content" style="margin: 50 80 50 80">Loading joke...</div>
       <div class="row" style="margin-bottom: 20px">
         <div class="col-sm-2"></div>
         <div class="col-sm-8">
@@ -70,10 +61,13 @@
       </div>
       <div
         class="container d-flex align-items-center justify-content-center text-white">
-        <button class="btn btn-primary" style="margin: 20px">
+        <button id="funny-button" class="btn btn-primary" style="margin: 20px">
           This is Funny!
         </button>
-        <button class="btn btn-success" style="margin: 20px">
+        <button
+          id="not-funny-button"
+          class="btn btn-success"
+          style="margin: 20px">
           This is not funny.
         </button>
       </div>
@@ -95,5 +89,69 @@
         </div>
       </div>
     </div>
+    <script>
+      async function fetchJoke() {
+        try {
+          const response = await fetch("http://localhost:3000/joke");
+          if (!response.ok) {
+            throw new Error("Failed to fetch joke content");
+          }
+          const jokeData = await response.json();
+          console.log(jokeData);
+          return jokeData;
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      }
+
+      async function appendJokeContent() {
+        const jokeData = await fetchJoke();
+        if (jokeData && !(typeof jokeData == "string")) {
+          const jokeContent = jokeData.items[0].content;
+          const jokeContentElement = document.getElementById("joke-content");
+          jokeContentElement.innerHTML = jokeContent;
+          const jokeId = jokeData.items[0]._id;
+          document
+            .getElementById("funny-button")
+            .addEventListener("click", () => sendVote(jokeId, true));
+          document
+            .getElementById("not-funny-button")
+            .addEventListener("click", () => sendVote(jokeId, false));
+        } else {
+          const jokeContentElement = document.getElementById("joke-content");
+          jokeContentElement.innerHTML = `That's all the jokes for today! Come back another day!`;
+        }
+      }
+
+      async function sendVote(jokeId, isFunny) {
+        try {
+          const response = await fetch("http://localhost:3000/vote", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              jokeId: jokeId,
+              isFunny: isFunny,
+            }),
+          });
+          if (!response.ok) {
+            throw new Error("Failed to send vote");
+          }
+          console.log("Vote sent successfully");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", appendJokeContent);
+      document
+        .getElementById("funny-button")
+        .addEventListener("click", appendJokeContent);
+      document
+        .getElementById("not-funny-button")
+        .addEventListener("click", appendJokeContent);
+    </script>
   </body>
 </html>
